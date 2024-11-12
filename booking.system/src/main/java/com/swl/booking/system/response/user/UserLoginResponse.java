@@ -13,7 +13,9 @@ public class UserLoginResponse implements Serializable {
 
 	private Long id;
 	
-	private String email;
+	private String name;
+	
+	private String phno;
 	
 	private String token;
 }

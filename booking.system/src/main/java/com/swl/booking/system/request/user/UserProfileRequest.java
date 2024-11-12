@@ -12,6 +12,6 @@ public class UserProfileRequest implements Serializable {
 	*/
 	private static final long serialVersionUID = -2901161642229321197L;
 
-	@NotBlank(message = "Email is required")
-	private String email;
+	@NotBlank(message = "Phone no is required")
+	private String phno;
 }

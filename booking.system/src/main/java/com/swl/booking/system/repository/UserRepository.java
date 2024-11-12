@@ -10,7 +10,7 @@ import com.swl.booking.system.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> { 
 	
-	Optional<User> findByEmail(String email);
+	Optional<User> findByPhno(String phno);
 
-	Optional<User> findByName(String username);
+	Optional<User> findByName(String username); 
 }

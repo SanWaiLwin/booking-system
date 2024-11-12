@@ -1,8 +1,7 @@
 package com.swl.booking.system.request.user;
 
 import java.io.Serializable;
- 
-import jakarta.validation.constraints.Email;
+  
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -15,9 +14,8 @@ public class UserLoginRequest implements Serializable {
 	private static final long serialVersionUID = 4577872606404204584L;
 
 //	@Schema(description = "User email address", example = "user@example.com")
-	@NotBlank(message = "Email is required")
-	@Email(message = "Email should be valid")
-	private String email;
+	@NotBlank(message = "Phone no is required") 
+	private String phno;
 
 //	@Schema(description = "User password", example = "password123", minLength = 8)
 	@NotBlank(message = "Password is required")

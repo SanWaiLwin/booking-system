@@ -22,17 +22,13 @@ public class UserRegisterRequest implements Serializable {
 	@NotEmpty(message = "Name is required") 
     private String name;
 	
-//    @Schema(description = "User email address", example = "user@example.com")
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email should be valid")
-    private String email;
+    @NotBlank(message = "Email is required") 
+    private String phno;
 
-//    @Schema(description = "User password", example = "password123", minLength = 8)
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password should be at least 8 characters long")
     private String password;
 
-//    @Schema(description = "Country code for user registration", example = "US", required = true)
     @NotNull(message = "Country is required")
     private String country;
 
