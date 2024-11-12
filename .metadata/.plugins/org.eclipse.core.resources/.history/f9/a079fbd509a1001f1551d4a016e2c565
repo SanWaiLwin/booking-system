@@ -1,0 +1,10 @@
+package com.swl.booking.system.service;
+
+import com.swl.booking.system.request.user.UserRegisterRequest;
+
+public interface UserService1 {
+
+	boolean verifyUser(String token); 
+	
+	void registerUser(UserRegisterRequest req);
+}

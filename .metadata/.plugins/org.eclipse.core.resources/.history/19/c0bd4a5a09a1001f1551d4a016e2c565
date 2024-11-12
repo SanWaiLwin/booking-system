@@ -1,0 +1,13 @@
+spring.application.name=booking.system
+
+spring.datasource.url=jdbc:mysql://localhost:3306/booking_system
+spring.datasource.driverClassName=com.mysql.cj.jdbc.Driver
+spring.datasource.username=root
+spring.datasource.password=root
+spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
+
+spring.quartz.job-store-type=jdbc
+spring.quartz.jdbc.initialize-schema=embedded
+
+spring.devtools.livereload.enabled=false
+server.port=8081 

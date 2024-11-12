@@ -1,0 +1,5 @@
+package com.swl.booking.system.config;
+
+public class SwaggerConfig {
+
+}
