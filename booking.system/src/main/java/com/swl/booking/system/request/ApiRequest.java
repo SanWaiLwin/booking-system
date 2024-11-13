@@ -2,6 +2,7 @@ package com.swl.booking.system.request;
 
 import java.io.Serializable;
 
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,8 @@ public class ApiRequest<T> implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -4009557924588181070L;
+	
+	@Valid
 	private T data;
 
 	public ApiRequest() {

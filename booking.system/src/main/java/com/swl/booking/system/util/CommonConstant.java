@@ -2,9 +2,8 @@ package com.swl.booking.system.util;
 
 public class CommonConstant {
 
-	public static final String MSG_PREFIX_SUCCESS = "success";
-	public static final String MSG_PREFIX_FAILED = "fail";
-	public static final String MSG_PREFIX_ERROR = "danger";
+	public static final String MSG_PREFIX_SUCCESS = "Success";
+	public static final String MSG_PREFIX_FAILED = "Failed"; 
 
 	public static final int EXPERY_TIME_BY_HOUR = 2;
 	

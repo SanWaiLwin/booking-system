@@ -1,8 +1,6 @@
 package com.swl.booking.system.controller;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+ 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,10 +20,11 @@ import com.swl.booking.system.security.JwtTokenProvider;
 import com.swl.booking.system.service.UserService;
 import com.swl.booking.system.util.CommonConstant;
 
-@RestController
-public class UserController {
+import jakarta.validation.Valid;
 
-	private final Logger logger = LoggerFactory.getLogger(UserController.class); 
+@RestController
+@Validated
+public class UserController { 
 
 	private final UserService userService;
 
@@ -36,73 +35,34 @@ public class UserController {
 		this.jwtTokenProvider = jwtTokenProvider;
 	}
 
-	@RequestMapping(value = "api/register", method = RequestMethod.POST)
-	public ApiResponse<Void> registerUser(@RequestBody ApiRequest<UserRegisterRequest> apiRequest) throws RdpException {
-		try {
-			logger.info("** registerUser api start **");
-			UserRegisterRequest req = apiRequest.getData();
-			userService.registerUser(req);
-
-			ApiResponse<Void> response = new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS,
-					"Registration successful. Please check your email to verify.");
-			logger.info("** registerUser api success **");
-			return response;
-		} catch (Exception e) {
-			logger.error("Error occurred during user registration: " + e.getMessage(), e);
-
-			ApiResponse<Void> errorResponse = new ApiResponse<>(CommonConstant.MSG_PREFIX_FAILED,
-					"An error occurred while processing your request. Please try again later.");
-			return errorResponse;
-		}
+	@PostMapping("api/register")
+	public ApiResponse<Void> registerUser(@Valid @RequestBody ApiRequest<UserRegisterRequest> apiRequest)
+			throws RdpException {
+		UserRegisterRequest req = apiRequest.getData();
+		userService.registerUser(req);
+		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "Registration successful.");
 	}
 
 	@RequestMapping(value = "api/login", method = RequestMethod.POST)
-	public ApiResponse<UserLoginResponse> loginUser(@RequestBody ApiRequest<UserLoginRequest> apiRequest) {
-		try {
-			logger.info("** loginUser api start **");
-			UserLoginRequest req = apiRequest.getData();
-			UserLoginResponse resp = userService.authenticateAndGenerateToken(req);
-			String token = jwtTokenProvider.generateToken(resp.getPhno());
-			resp.setToken(token);
-
-			ApiResponse<UserLoginResponse> response = new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS,
-					"Login successful", resp);
-			logger.info("** loginUser api success **");
-			return response;
-		} catch (Exception e) {
-			logger.error("Error occurred during user login: " + e.getMessage(), e);
-			return new ApiResponse<>(CommonConstant.MSG_PREFIX_FAILED,
-					"An error occurred while processing your request. Please try again later.");
-		}
+	public ApiResponse<UserLoginResponse> loginUser(@Valid @RequestBody ApiRequest<UserLoginRequest> apiRequest) {
+		UserLoginRequest req = apiRequest.getData();
+		UserLoginResponse resp = userService.authenticateAndGenerateToken(req);
+		String token = jwtTokenProvider.generateToken(resp.getPhno());
+		resp.setToken(token);
+		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "Login successful", resp);
 	}
 
-	@RequestMapping(value = "api/auth/update-profile", method = RequestMethod.POST) 
-	public ApiResponse<String> updateUserProfile(@RequestBody ApiRequest<UserUpdateRequest> apiRequest) {
-		try {
-			logger.info("** updateUserProfile api start **");
-			UserUpdateRequest req = apiRequest.getData();
-			userService.updateUserProfile(req);
-			logger.info("** updateUserProfile api success **");
-			return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "Update successful");
-		} catch (Exception e) {
-			logger.error("Error occurred during user login: " + e.getMessage(), e);
-			return new ApiResponse<>(CommonConstant.MSG_PREFIX_FAILED,
-					"An error occurred while processing your request. Please try again later.");
-		}
+	@RequestMapping(value = "api/auth/update-profile", method = RequestMethod.POST)
+	public ApiResponse<String> updateUserProfile(@Valid @RequestBody ApiRequest<UserUpdateRequest> apiRequest) {
+		UserUpdateRequest req = apiRequest.getData();
+		userService.updateUserProfile(req);
+		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "Update successful");
 	}
 
-	@RequestMapping(value = "api/auth/get-user", method = RequestMethod.POST)  
-	public ApiResponse<UserProfileResponse> getUsers(@RequestBody ApiRequest<UserProfileRequest> apiRequest) {
-		try {
-			logger.info("** getUsers api start **");
-			UserProfileRequest req = apiRequest.getData();
-			UserProfileResponse resp = userService.getByFilter(req);
-			logger.info("** getUsers api success **");
-			return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "Users retrieved successfully", resp);
-		} catch (Exception e) {
-			logger.error("Error occurred during get user: " + e.getMessage(), e);
-			return new ApiResponse<>(CommonConstant.MSG_PREFIX_FAILED,
-					"An error occurred while processing your request. Please try again later.");
-		}
+	@RequestMapping(value = "api/auth/get-user", method = RequestMethod.POST)
+	public ApiResponse<UserProfileResponse> getUsers(@Valid @RequestBody ApiRequest<UserProfileRequest> apiRequest) {
+		UserProfileRequest req = apiRequest.getData();
+		UserProfileResponse resp = userService.getByFilter(req);
+		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "Users retrieved successfully", resp);
 	}
 }

@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.swl.booking.system.entity.User;
+import com.swl.booking.system.exception.AlreadyExitException;
 import com.swl.booking.system.repository.UserRepository;
 import com.swl.booking.system.request.user.UserLoginRequest;
 import com.swl.booking.system.request.user.UserProfileRequest;
@@ -33,8 +34,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void registerUser(UserRegisterRequest req) {
 		Optional<User> existingUser = userRepository.findByPhno(req.getPhno());
-		if (existingUser.isPresent()) {
-			throw new RuntimeException("User with this phone already exists");
+		if (existingUser.isPresent()) { 
+			throw new AlreadyExitException("User with this phone already exists.");
 		}
 
 		User user = prepareUserFromReq(req);
@@ -59,7 +60,7 @@ public class UserServiceImpl implements UserService {
 	public UserLoginResponse authenticateAndGenerateToken(UserLoginRequest req) {
 		Optional<User> user = userRepository.findByPhno(req.getPhno());
 		if (user.isEmpty() || !passwordEncoder.matches(req.getPassword(), user.get().getPassword())) {
-			throw new RuntimeException("Invalid credentials for phone no: " + req.getPhno());
+			throw new AlreadyExitException("Invalid credentials for phone no: " + req.getPhno()); 
 		} 
 		return prepareUserLoginResponse(user.get());
 	}
@@ -76,7 +77,7 @@ public class UserServiceImpl implements UserService {
 	public UserProfileResponse getByFilter(UserProfileRequest req) {
 		Optional<User> user = userRepository.findByPhno(req.getPhno());
 		if (user.isEmpty()) {
-			throw new RuntimeException("Invalid credentials for phone no: " + req.getPhno());
+			throw new AlreadyExitException("Invalid credentials for phone no: " + req.getPhno());
 		}
 		return prepareDataForProfile(user.get());
 	}
@@ -95,7 +96,7 @@ public class UserServiceImpl implements UserService {
 	public void updateUserProfile(UserUpdateRequest req) {
 		Optional<User> userOpt = userRepository.findByPhno(req.getPhno());
 		if (userOpt.isEmpty()) {
-			throw new RuntimeException("Invalid credentials for phone no: " + req.getPhno());
+			throw new AlreadyExitException("Invalid credentials for phone no: " + req.getPhno());
 		}
 		User user = userOpt.get();
 		user.setPassword(passwordEncoder.encode(req.getPassword()));
@@ -106,7 +107,7 @@ public class UserServiceImpl implements UserService {
 	public User findById(Long id) {
 		Optional<User> userOpt = userRepository.findById(id);
 		if (userOpt.isEmpty()) {
-			throw new RuntimeException("Invalid credentials for id: " + id);
+			throw new AlreadyExitException("Invalid credentials for id: " + id);
 		}
 		return userOpt.get();
 	}

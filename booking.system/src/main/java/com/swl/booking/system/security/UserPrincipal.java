@@ -39,14 +39,8 @@ public class UserPrincipal implements UserDetails {
 		this.orgNo = orgNo;
 		this.isSuperAdmin = isSuperAdmin;
 		this.authorities = authorities;
-	}
-
-//	public static UserPrincipal create(User user) {
-//		List<GrantedAuthority> authorities = new ArrayList<>(); 
-//		GrantedAuthority auth = new SimpleGrantedAuthority(user.getId().toString());
-//		authorities.add(auth);
-//		return new UserPrincipal(user.getId(), user.getPhno(), user.getPassword(), null, false, authorities);
-//	}
+	} 
+	
 	public static UserPrincipal create(User user) {
 		List<GrantedAuthority> authorities = new ArrayList<>();
 		if(user.isVerified()){
