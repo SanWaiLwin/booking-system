@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service; 
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.swl.booking.system.entity.Booking;
@@ -79,7 +79,7 @@ public class BookingServiceImpl implements BookingService {
 
 		try {
 			User user = getUser();
-			bookingProcess(user, req); 
+			bookingProcess(user, req);
 		} finally {
 			redisTemplate.delete(lockKey);
 		}
@@ -94,7 +94,7 @@ public class BookingServiceImpl implements BookingService {
 		validateSufficientCredits(purchasedPackage, bookingClass);
 		validateAvaiableSlot(user, bookingClass);
 
-		processBooking(user, bookingClass, purchasedPackage); 
+		processBooking(user, bookingClass, purchasedPackage);
 	}
 
 	@Transactional
@@ -114,15 +114,15 @@ public class BookingServiceImpl implements BookingService {
 		Optional<WaitingList> waitingListOpt = getWaitingList(bookingClass);
 
 		if (waitingListOpt.isPresent()) {
-			bookFroWaitingList(waitingListOpt, bookingClass); 
+			bookFroWaitingList(waitingListOpt, bookingClass);
 		}
 	}
 
 	private void bookFroWaitingList(Optional<WaitingList> waitingListOpt, BookingClass bookingClass) {
 		User wUser = waitingListOpt.get().getUser();
 		BookClassRequest reqForBooking = new BookClassRequest();
-		reqForBooking.setBookingClassId(bookingClass.getId()); 
-		bookingProcess(wUser, reqForBooking); 
+		reqForBooking.setBookingClassId(bookingClass.getId());
+		bookingProcess(wUser, reqForBooking);
 		waitingListRepository.delete(waitingListOpt.get());
 	}
 
@@ -166,7 +166,7 @@ public class BookingServiceImpl implements BookingService {
 			waitingListService.addToWaitingListInNewTransaction(user, bookingClass);
 			throw new ResponseInfoException("Booking Class is full. You have added to waiting list.");
 		}
-	} 
+	}
 
 	private void validateSufficientCredits(PurchasedPackage purchasedPackage, BookingClass bookingClass) {
 		if (purchasedPackage.getRemainingCredits() < bookingClass.getRequiredCredits())
@@ -213,7 +213,7 @@ public class BookingServiceImpl implements BookingService {
 	private void updateBooking(Booking booking) {
 		booking.setStatus(BookingStatus.CANCEL.getCode());
 		bookingRepository.save(booking);
-	} 
+	}
 
 	private User getUser() {
 		UserPrincipal userData = CommonUtil.getUserPrincipalFromAuthentication();
@@ -286,6 +286,6 @@ public class BookingServiceImpl implements BookingService {
 		if (!isValid) {
 			throw new ResponseInfoException("Check-in is only allowed within the valid check-in timeframe.");
 		}
-	}
+	} 
 
 }

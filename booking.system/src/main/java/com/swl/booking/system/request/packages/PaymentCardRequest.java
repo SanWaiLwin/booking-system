@@ -14,5 +14,5 @@ public class PaymentCardRequest {
 
 	public void setPaymentMethod(String paymentMethod) {
 		this.paymentMethod = paymentMethod;
-	}
+	} 
 }
