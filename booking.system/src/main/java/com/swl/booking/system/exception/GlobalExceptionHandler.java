@@ -45,5 +45,5 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleInvalidInputException(AlreadyExitException ex) {
         ApiResponse<Void> response = new ApiResponse<>(CommonConstant.MSG_PREFIX_FAILED, ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
+    } 
 }

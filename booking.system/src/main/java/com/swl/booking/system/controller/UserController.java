@@ -1,10 +1,8 @@
 package com.swl.booking.system.controller;
- 
+
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestBody; 
 import org.springframework.web.bind.annotation.RestController;
 
 import com.swl.booking.system.exception.RdpException;
@@ -24,7 +22,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @Validated
-public class UserController { 
+public class UserController {
 
 	private final UserService userService;
 
@@ -43,7 +41,7 @@ public class UserController {
 		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "Registration successful.");
 	}
 
-	@RequestMapping(value = "api/login", method = RequestMethod.POST)
+	@PostMapping("api/login")
 	public ApiResponse<UserLoginResponse> loginUser(@Valid @RequestBody ApiRequest<UserLoginRequest> apiRequest) {
 		UserLoginRequest req = apiRequest.getData();
 		UserLoginResponse resp = userService.authenticateAndGenerateToken(req);
@@ -52,14 +50,14 @@ public class UserController {
 		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "Login successful", resp);
 	}
 
-	@RequestMapping(value = "api/auth/update-profile", method = RequestMethod.POST)
+	@PostMapping("api/auth/update-profile")
 	public ApiResponse<String> updateUserProfile(@Valid @RequestBody ApiRequest<UserUpdateRequest> apiRequest) {
 		UserUpdateRequest req = apiRequest.getData();
 		userService.updateUserProfile(req);
 		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "Update successful");
 	}
 
-	@RequestMapping(value = "api/auth/get-user", method = RequestMethod.POST)
+	@PostMapping("api/auth/get-user")
 	public ApiResponse<UserProfileResponse> getUsers(@Valid @RequestBody ApiRequest<UserProfileRequest> apiRequest) {
 		UserProfileRequest req = apiRequest.getData();
 		UserProfileResponse resp = userService.getByFilter(req);
