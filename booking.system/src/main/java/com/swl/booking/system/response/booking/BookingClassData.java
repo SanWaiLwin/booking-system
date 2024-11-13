@@ -2,7 +2,9 @@ package com.swl.booking.system.response.booking;
 
 import java.io.Serializable;
 
-import com.swl.booking.system.entity.BookingClass; 
+import com.swl.booking.system.entity.BookingClass;
+import com.swl.booking.system.util.CommonConstant;
+import com.swl.booking.system.util.CommonUtil;
 
 import lombok.Data;
 
@@ -22,7 +24,11 @@ public class BookingClassData implements Serializable {
 	private int requiredCredits;
 
 	private int availableSlots;
-	
+
+	private String startDate;
+
+	private String expiryDate;
+
 	public BookingClassData() {
 		super();
 	}
@@ -34,6 +40,9 @@ public class BookingClassData implements Serializable {
 			this.countryName = data.getCountry().getName();
 			this.requiredCredits = data.getRequiredCredits();
 			this.availableSlots = data.getAvailableSlots();
+			this.startDate = CommonUtil.dateToString(CommonConstant.STD_DATE_FORMAT, data.getStartDate());
+			this.expiryDate = CommonUtil.dateToString(CommonConstant.STD_DATE_FORMAT, data.getExpiryDate());
+
 		}
 	}
 }

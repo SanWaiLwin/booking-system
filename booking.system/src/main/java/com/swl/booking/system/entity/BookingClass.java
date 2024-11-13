@@ -36,8 +36,11 @@ public class BookingClass extends BaseEntity {
 	private int requiredCredits;
 
 	@Column(name = "available_slots")
-	private int availableSlots; 
-	
+	private int availableSlots;
+
+	@Column(name = "start_date")
+	private Date startDate;
+
 	@Column(name = "expiry_date")
 	private Date expiryDate;
 
@@ -49,4 +52,7 @@ public class BookingClass extends BaseEntity {
 		}
 	}
 
+	public void incrementAvailableSlots() {
+		availableSlots++;
+	} 
 }

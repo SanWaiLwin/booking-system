@@ -31,7 +31,17 @@ public class Booking extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "booking_class_id", nullable = false)
 	private BookingClass bookingClass;
+	
+	@Column(name = "perchased_package_id")
+	private Long perchasedPackageId;
 
 	@Column(name = "booking_date")
 	private Date bookingDate = new Date();
+	
+	@Column(name = "expiry_date")
+	private Date expiryDate;
+	
+	@Column(name = "status")
+	private int status;
+	
 }

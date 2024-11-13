@@ -26,7 +26,7 @@ public class PurchasedPackage extends BaseEntity {
 	private static final long serialVersionUID = -4830416237362008714L;
 
 	@Column(name = "remaining_credits")
-	private int remainingCredits; 
+	private int remainingCredits;
 
 	@Column(name = "purchase_date")
 	private Date purchaseDate = new Date();
@@ -45,5 +45,9 @@ public class PurchasedPackage extends BaseEntity {
 		} else {
 			throw new IllegalStateException("Insufficient credits to decrement.");
 		}
+	}
+
+	public void incrementRemainingCredits(int credit) {
+		remainingCredits += credit;
 	}
 }

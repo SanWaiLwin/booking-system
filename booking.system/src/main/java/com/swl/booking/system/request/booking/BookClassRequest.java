@@ -16,8 +16,4 @@ public class BookClassRequest implements Serializable {
 	@NotNull(message = "Booking class id is required")
 	@Min(value = 1, message = "Booking class id  must be greater than or equal to 1")
 	private Long bookingClassId;
-	
-	@NotNull(message = "Purchased package id is required")
-	@Min(value = 1, message = "Purchased package id  must be greater than or equal to 1")
-	private Long purchasedPackageId;
 }

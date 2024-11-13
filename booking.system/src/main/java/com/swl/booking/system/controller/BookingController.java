@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.swl.booking.system.request.ApiRequest;
 import com.swl.booking.system.request.booking.BookClassRequest;
+import com.swl.booking.system.request.booking.CancelClassRequest;
 import com.swl.booking.system.request.booking.ViewAvaiableClassRequest;
 import com.swl.booking.system.response.ApiResponse;
 import com.swl.booking.system.response.booking.ViewAvaiableClassResponse;
@@ -62,5 +63,12 @@ public class BookingController {
 	public ApiResponse<ViewAvaiableClassResponse> getMyClassList() {
 		ViewAvaiableClassResponse resp = bookingService.getMyClassList();
 		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "My class list", resp);
+	}
+	
+	@PostMapping("/cancelClass")
+	public ApiResponse<String> cancelClass(@Valid @RequestBody ApiRequest<CancelClassRequest> apiRequest) {
+		CancelClassRequest req = apiRequest.getData();
+		bookingService.cancelClass(req);
+		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "Cancel class is successful.");
 	}
 }
