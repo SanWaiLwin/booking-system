@@ -28,7 +28,7 @@ public class PackagesController {
 		this.packagesService = packagesService;
 	}
 
-	@PostMapping("/available")
+	@PostMapping("/availablePackages")
 	public ApiResponse<PackageAvaiableResponse> getAvailablePackages(
 			@Valid @RequestBody ApiRequest<PackageAvaiableRequest> apiRequest) {
 		PackageAvaiableRequest req = apiRequest.getData();
@@ -36,14 +36,14 @@ public class PackagesController {
 		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "Avaiable packages ", resp);
 	}
 
-	@PostMapping("/purchase")
+	@PostMapping("/purchasePackage")
 	public ApiResponse<String> purchasePackage(@Valid @RequestBody ApiRequest<PurchasePackageRequest> apiRequest) {
 		PurchasePackageRequest req = apiRequest.getData(); 
 		packagesService.purchasePackage(req);
 		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "Purchase package is successful.");
 	}
 
-	@PostMapping("/my-package")
+	@PostMapping("/myPackages")
 	public ApiResponse<MyPackageResponse> getMyPackage() { 
 		MyPackageResponse resp = packagesService.getDataByFilter();
 		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "Purchased packages ", resp);

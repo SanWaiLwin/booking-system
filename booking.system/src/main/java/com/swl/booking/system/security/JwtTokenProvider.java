@@ -20,7 +20,7 @@ public class JwtTokenProvider {
 
 	public String generateToken(String username) {
 		return Jwts.builder().setSubject(username).setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + jwtExpirationIns)) // Set expiration time
+				.setExpiration(new Date(System.currentTimeMillis() + jwtExpirationIns * 3600000)) // Set expiration time
 				.signWith(SignatureAlgorithm.HS512, Base64.getEncoder().encodeToString(jwtSecret.getBytes())).compact();
 	}
 

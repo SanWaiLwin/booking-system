@@ -1,7 +1,5 @@
 package com.swl.booking.system.entity;
 
-import java.util.Date;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,9 +31,6 @@ public class Packages extends BaseEntity {
 
 	@Column(name = "price")
 	private double price;
-
-	@Column(name = "expiry_date")
-	private Date expiryDate;
 
 	@OneToOne(fetch = FetchType.LAZY) 
 	@JoinColumn(name = "country_id")

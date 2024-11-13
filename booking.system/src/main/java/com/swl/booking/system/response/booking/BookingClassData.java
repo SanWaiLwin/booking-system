@@ -22,6 +22,10 @@ public class BookingClassData implements Serializable {
 	private int requiredCredits;
 
 	private int availableSlots;
+	
+	public BookingClassData() {
+		super();
+	}
 
 	public BookingClassData(BookingClass data) {
 		if (data != null) {

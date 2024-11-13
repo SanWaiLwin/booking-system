@@ -18,7 +18,7 @@ import com.swl.booking.system.request.packages.PaymentCardRequest;
 import com.swl.booking.system.request.packages.PaymentChargeRequest;
 import com.swl.booking.system.request.packages.PurchasePackageRequest;
 import com.swl.booking.system.response.packages.PackageAvaiableResponse;
-import com.swl.booking.system.response.packages.MyPackageData;
+import com.swl.booking.system.response.packages.PackageAvaiableData;
 import com.swl.booking.system.response.packages.PurchasePackageData;
 import com.swl.booking.system.response.packages.MyPackageResponse;
 import com.swl.booking.system.security.UserPrincipal;
@@ -50,7 +50,7 @@ public class PackagesServiceImpl implements PackagesService {
 	private PackageAvaiableResponse prepareDataForResponse(List<Packages> datas) {
 		PackageAvaiableResponse resp = new PackageAvaiableResponse();
 
-		List<MyPackageData> packagesDataList = datas.stream().map(data -> new MyPackageData(data))
+		List<PackageAvaiableData> packagesDataList = datas.stream().map(data -> new PackageAvaiableData(data))
 				.collect(Collectors.toList());
 
 		resp.setPackageList(packagesDataList);
@@ -80,7 +80,6 @@ public class PackagesServiceImpl implements PackagesService {
 		resp.setPackageName(data.getPack().getName());
 		resp.setCountry(data.getPack().getCountry().getName());
 		resp.setRemainingCredits(data.getRemainingCredits());
-		resp.setExpiryDate(CommonUtil.dateToString(CommonConstant.STD_DATE_FORMAT, data.getExpiryDate()));
 		resp.setPurchaseDate(CommonUtil.dateToString(CommonConstant.STD_DATE_FORMAT, data.getPurchaseDate()));
 		return resp;
 	}
@@ -93,7 +92,6 @@ public class PackagesServiceImpl implements PackagesService {
 			purchasedPackage.setUser(user);
 			purchasedPackage.setPack(pack);
 			purchasedPackage.setRemainingCredits(pack.getCredits());
-			purchasedPackage.setExpiryDate(pack.getExpiryDate());
 			purchasedPackageRepository.save(purchasedPackage);
 		}
 	}

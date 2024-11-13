@@ -1,8 +1,7 @@
 package com.swl.booking.system.service;
 
 import com.swl.booking.system.entity.User;
-import com.swl.booking.system.request.user.UserLoginRequest;
-import com.swl.booking.system.request.user.UserProfileRequest;
+import com.swl.booking.system.request.user.UserLoginRequest; 
 import com.swl.booking.system.request.user.UserRegisterRequest;
 import com.swl.booking.system.request.user.UserUpdateRequest;
 import com.swl.booking.system.response.user.UserLoginResponse;
@@ -12,11 +11,11 @@ public interface UserService {
 
 	void registerUser(UserRegisterRequest req);
 
-	UserLoginResponse authenticateAndGenerateToken(UserLoginRequest req);
-
-	UserProfileResponse getByFilter(UserProfileRequest req);
+	UserLoginResponse authenticateAndGenerateToken(UserLoginRequest req); 
 
 	void updateUserProfile(UserUpdateRequest req);
 
-	User findById(Long id); 
+	User findById(Long id);
+
+	UserProfileResponse getUser(); 
 }

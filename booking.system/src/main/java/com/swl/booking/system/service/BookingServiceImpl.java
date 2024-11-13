@@ -1,8 +1,6 @@
 package com.swl.booking.system.service;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -23,12 +21,11 @@ import com.swl.booking.system.repository.PurchasedPackageRepository;
 import com.swl.booking.system.repository.UserRepository;
 import com.swl.booking.system.repository.WaitingListRepository;
 import com.swl.booking.system.request.booking.BookClassRequest;
+import com.swl.booking.system.response.booking.BookingClassData;
+import com.swl.booking.system.response.booking.ViewAvaiableClassResponse;
 import com.swl.booking.system.security.UserPrincipal;
 import com.swl.booking.system.util.CommonUtil;
 
-import jakarta.persistence.EntityNotFoundException;
-
-@SuppressWarnings("unused")
 @Service
 public class BookingServiceImpl implements BookingService {
 
@@ -61,7 +58,7 @@ public class BookingServiceImpl implements BookingService {
 		try {
 			User user = getUser();
 			BookingClass bookingClass = getBookingClass(req.getBookingClassId());
-			PurchasedPackage purchasedPackage = getPurchasedPackage(req.getPurchasedPackageId()); 
+			PurchasedPackage purchasedPackage = getPurchasedPackage(req.getPurchasedPackageId());
 
 			validateSufficientCredits(purchasedPackage, bookingClass);
 			validateAvaiableSlot(user, bookingClass);
@@ -70,11 +67,11 @@ public class BookingServiceImpl implements BookingService {
 		} finally {
 			redisTemplate.delete(lockKey);
 		}
-	} 
+	}
 
 	private <T> T getEntityOrThrow(Optional<T> entity, String entityName) {
 		return entity.orElseThrow(() -> new ResponseInfoException(entityName + " not found."));
-	} 
+	}
 
 	private void validateAvaiableSlot(User user, BookingClass bookingClass) {
 		if (bookingClass.getAvailableSlots() <= 0) {
@@ -123,8 +120,30 @@ public class BookingServiceImpl implements BookingService {
 	private BookingClass getBookingClass(Long bookingClassId) {
 		return getEntityOrThrow(bookingClassRepository.findById(bookingClassId), "Booking class");
 	}
-	
+
 	private PurchasedPackage getPurchasedPackage(Long purchasedPackageId) {
 		return getEntityOrThrow(purchasedPackageRepository.findById(purchasedPackageId), "Purchased package");
+	}
+
+	@Override
+	public ViewAvaiableClassResponse getMyClassList() {
+		UserPrincipal userData = CommonUtil.getUserPrincipalFromAuthentication();
+		List<Booking> dataList = bookingRepository.findByUserId(userData.getId());
+
+		ViewAvaiableClassResponse resp = new ViewAvaiableClassResponse();
+		List<BookingClassData> bookingClassData = dataList.stream().map(d -> prepareBookingClassData(d))
+				.collect(Collectors.toList());
+		resp.setClassList(bookingClassData);
+		return resp;
+	}
+
+	private BookingClassData prepareBookingClassData(Booking d) {
+		BookingClassData data = new BookingClassData();
+		data.setId(d.getId());
+		data.setName(d.getBookingClass().getName());
+		data.setCountryName(d.getBookingClass().getCountry().getName());
+		data.setRequiredCredits(d.getBookingClass().getRequiredCredits());
+		data.setAvailableSlots(d.getBookingClass().getAvailableSlots());
+		return data;
 	}
 }

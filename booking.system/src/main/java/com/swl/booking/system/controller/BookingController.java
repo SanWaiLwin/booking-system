@@ -11,8 +11,10 @@ import com.swl.booking.system.request.booking.BookClassRequest;
 import com.swl.booking.system.request.booking.ViewAvaiableClassRequest;
 import com.swl.booking.system.response.ApiResponse;
 import com.swl.booking.system.response.booking.ViewAvaiableClassResponse;
+import com.swl.booking.system.response.booking.WaitingListResponse;
 import com.swl.booking.system.service.BookingClassService;
 import com.swl.booking.system.service.BookingService;
+import com.swl.booking.system.service.WaitingListService;
 import com.swl.booking.system.util.CommonConstant;
 
 import jakarta.validation.Valid;
@@ -26,12 +28,16 @@ public class BookingController {
 
 	private final BookingClassService bookingClassService;
 
-	public BookingController(BookingService bookingService, BookingClassService bookingClassService) {
+	private final WaitingListService waitingListService;
+
+	public BookingController(BookingService bookingService, BookingClassService bookingClassService,
+			WaitingListService waitingListService) {
 		this.bookingService = bookingService;
 		this.bookingClassService = bookingClassService;
+		this.waitingListService = waitingListService;
 	}
 
-	@PostMapping("/get-class")
+	@PostMapping("/getClass")
 	public ApiResponse<ViewAvaiableClassResponse> viewAvaiableClass(
 			@Valid @RequestBody ApiRequest<ViewAvaiableClassRequest> apiRequest) {
 		ViewAvaiableClassRequest req = apiRequest.getData();
@@ -39,16 +45,22 @@ public class BookingController {
 		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "Avaiable Class", resp);
 	}
 
-	@PostMapping("/book-class")
+	@PostMapping("/bookClass")
 	public ApiResponse<String> bookClass(@Valid @RequestBody ApiRequest<BookClassRequest> apiRequest) {
 		BookClassRequest req = apiRequest.getData();
 		bookingService.bookClass(req);
 		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "Booking class is successful.");
-	} 
+	}
+
+	@PostMapping("/myWaitingClass")
+	public ApiResponse<WaitingListResponse> myWaitingClass() {
+		WaitingListResponse resp = waitingListService.getWaitingList();
+		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "My waiting class list", resp);
+	}
 	
-	@PostMapping("/get-waiting-list")
-	public ApiResponse<String> bookClass() { 
-//		bookingService.bookClass(req);
-		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "Booking class is successful.");
-	} 
+	@PostMapping("/myClass")
+	public ApiResponse<ViewAvaiableClassResponse> getMyClassList() {
+		ViewAvaiableClassResponse resp = bookingService.getMyClassList();
+		return new ApiResponse<>(CommonConstant.MSG_PREFIX_SUCCESS, "My class list", resp);
+	}
 }

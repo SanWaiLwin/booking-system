@@ -1,5 +1,7 @@
 package com.swl.booking.system.entity;
 
+import java.util.Date;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -34,7 +36,10 @@ public class BookingClass extends BaseEntity {
 	private int requiredCredits;
 
 	@Column(name = "available_slots")
-	private int availableSlots;
+	private int availableSlots; 
+	
+	@Column(name = "expiry_date")
+	private Date expiryDate;
 
 	public void decrementAvailableSlots() {
 		if (availableSlots > 0) {

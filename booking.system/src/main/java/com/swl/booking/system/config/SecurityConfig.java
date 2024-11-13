@@ -19,42 +19,47 @@ import com.swl.booking.system.security.JwtAuthenticationFilter;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final CustomUserDetailsService customUserDetailsService;
+	private final CustomUserDetailsService customUserDetailsService;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
-        this.customUserDetailsService = customUserDetailsService;
-    } 
+	public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+		this.customUserDetailsService = customUserDetailsService;
+	}
 
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter();
-    }
+	@Bean
+	public JwtAuthenticationFilter jwtAuthenticationFilter() {
+		return new JwtAuthenticationFilter();
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-    // AuthenticationManager bean configuration for Spring Boot 3.x
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
+	// AuthenticationManager bean configuration for Spring Boot 3.x
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+			throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
+	}
 
-    // Security filter chain configuration
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())  // Disable CSRF if using JWTs
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/login", "/api/register").permitAll()  // Public endpoints
-                .anyRequest().authenticated()  // Secure all other endpoints
-            )
-            .exceptionHandling(exception -> exception
-                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-            );
+	// Security filter chain configuration
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.csrf(csrf -> csrf.disable()) // Disable CSRF if using JWTs
+				.authorizeHttpRequests(authorize -> authorize 
+						.requestMatchers(
+			                    "/v3/api-docs/**",
+			                    "/swagger-ui/**",
+			                    "/swagger-ui.html",
+			                    "/swagger-resources/**",
+			                    "/webjars/**",
+			                    "/api/login",
+			                    "/api/register"
+			                ).permitAll()
+						.anyRequest().authenticated() // Secure all other endpoints
+				).exceptionHandling(exception -> exception.authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
 
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    } 
+		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+		return http.build();
+	}
 }

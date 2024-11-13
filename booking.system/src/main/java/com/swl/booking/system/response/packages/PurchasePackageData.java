@@ -17,9 +17,7 @@ public class PurchasePackageData implements Serializable {
 	
 	private String country;
 
-	private int remainingCredits;
-
-	private String expiryDate;
+	private int remainingCredits; 
 
 	private String purchaseDate;
 }
