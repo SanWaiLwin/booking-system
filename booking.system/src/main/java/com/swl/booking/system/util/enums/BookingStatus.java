@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum BookingStatus {
-	
-	ACTIVE(1, "Active"), CANCEL(2, "Cancel"), EXPIRY(3, "Expiry"), COMPLETED(4, "Completed");
 
-	private Integer code;
+	ACTIVE(1, "Active"), CANCEL(2, "Cancel"), EXPIRY(3, "Expiry"), CHECK_IN(4, "Check in");
+
+	private int code;
 	private String desc;
 
-	BookingStatus(Integer code, String desc) {
+	BookingStatus(int code, String desc) {
 		this.code = code;
 		this.desc = desc;
 	}
 
-	public Integer getCode() {
+	public int getCode() {
 		return code;
 	}
 
@@ -23,7 +23,7 @@ public enum BookingStatus {
 		return desc;
 	}
 
-	public static String getDescByCode(Integer code) {
+	public static String getDescByCode(int code) {
 		for (BookingStatus dt : values()) {
 			if (dt.getCode() == code) {
 				return dt.getDesc();

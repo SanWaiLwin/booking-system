@@ -16,4 +16,5 @@ public class CommonConstant {
 	public static final String PAYMENT_METHOD = "card";
 
 	public static final int DIFFERENT_HOURS = 4;
+	public static final int CHECK_IN_WINDOW_MIN = 10;
 }
