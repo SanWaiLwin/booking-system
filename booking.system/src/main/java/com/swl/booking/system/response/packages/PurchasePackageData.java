@@ -14,6 +14,8 @@ public class PurchasePackageData implements Serializable {
 	private Long id;
 
 	private String packageName;
+	
+	private String country;
 
 	private int remainingCredits;
 

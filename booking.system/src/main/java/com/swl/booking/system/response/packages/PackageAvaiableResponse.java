@@ -12,5 +12,5 @@ public class PackageAvaiableResponse implements Serializable {
 	*/
 	private static final long serialVersionUID = -7781423537166722059L;
 
-	private List<PackagesData> packageList;
+	private List<MyPackageData> packageList;
 }

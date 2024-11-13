@@ -18,9 +18,9 @@ import com.swl.booking.system.request.packages.PaymentCardRequest;
 import com.swl.booking.system.request.packages.PaymentChargeRequest;
 import com.swl.booking.system.request.packages.PurchasePackageRequest;
 import com.swl.booking.system.response.packages.PackageAvaiableResponse;
-import com.swl.booking.system.response.packages.PackagesData;
+import com.swl.booking.system.response.packages.MyPackageData;
 import com.swl.booking.system.response.packages.PurchasePackageData;
-import com.swl.booking.system.response.packages.PurchasePackageResponse;
+import com.swl.booking.system.response.packages.MyPackageResponse;
 import com.swl.booking.system.security.UserPrincipal;
 import com.swl.booking.system.util.CommonConstant;
 import com.swl.booking.system.util.CommonUtil;
@@ -50,7 +50,7 @@ public class PackagesServiceImpl implements PackagesService {
 	private PackageAvaiableResponse prepareDataForResponse(List<Packages> datas) {
 		PackageAvaiableResponse resp = new PackageAvaiableResponse();
 
-		List<PackagesData> packagesDataList = datas.stream().map(data -> new PackagesData(data))
+		List<MyPackageData> packagesDataList = datas.stream().map(data -> new MyPackageData(data))
 				.collect(Collectors.toList());
 
 		resp.setPackageList(packagesDataList);
@@ -58,7 +58,7 @@ public class PackagesServiceImpl implements PackagesService {
 	}
 
 	@Override
-	public PurchasePackageResponse getPurchasePackage(PurchasePackageRequest req) {
+	public void purchasePackage(PurchasePackageRequest req) {
 
 		User user = getUser();
 		Packages pack = getPackages(req.getPackageId());
@@ -66,12 +66,6 @@ public class PackagesServiceImpl implements PackagesService {
 				CommonConstant.PAYMENT_METHOD);
 
 		purchasePackage(user, pack, paymentChargeRequest);
-
-		List<PurchasedPackage> dataList = purchasedPackageRepository.findByUserId(user.getId());
-
-		PurchasePackageResponse resp = new PurchasePackageResponse();
-		resp.setPackageList(preparePurchasePackageDataList(dataList));
-		return resp;
 	}
 
 	private List<PurchasePackageData> preparePurchasePackageDataList(List<PurchasedPackage> dataList) {
@@ -84,8 +78,9 @@ public class PackagesServiceImpl implements PackagesService {
 		PurchasePackageData resp = new PurchasePackageData();
 		resp.setId(data.getId());
 		resp.setPackageName(data.getPack().getName());
+		resp.setCountry(data.getPack().getCountry().getName());
 		resp.setRemainingCredits(data.getRemainingCredits());
-		resp.setExpiryDate(CommonUtil.dateToString(CommonConstant.STD_DATE_FORMAT, data.getPack().getExpiryDate()));
+		resp.setExpiryDate(CommonUtil.dateToString(CommonConstant.STD_DATE_FORMAT, data.getExpiryDate()));
 		resp.setPurchaseDate(CommonUtil.dateToString(CommonConstant.STD_DATE_FORMAT, data.getPurchaseDate()));
 		return resp;
 	}
@@ -98,6 +93,7 @@ public class PackagesServiceImpl implements PackagesService {
 			purchasedPackage.setUser(user);
 			purchasedPackage.setPack(pack);
 			purchasedPackage.setRemainingCredits(pack.getCredits());
+			purchasedPackage.setExpiryDate(pack.getExpiryDate());
 			purchasedPackageRepository.save(purchasedPackage);
 		}
 	}
@@ -117,6 +113,16 @@ public class PackagesServiceImpl implements PackagesService {
 			throw new AlreadyExitException("User is not exist.");
 		}
 		return userOpt.get();
+	}
+
+	@Override
+	public MyPackageResponse getDataByFilter() {
+		UserPrincipal userData = CommonUtil.getUserPrincipalFromAuthentication();
+		List<PurchasedPackage> dataList = purchasedPackageRepository.findByUserId(userData.getId());
+
+		MyPackageResponse resp = new MyPackageResponse();
+		resp.setMyPackageList(preparePurchasePackageDataList(dataList));
+		return resp;
 	}
 
 	public boolean AddPaymentCard(PaymentCardRequest paymentCardRequest) {

@@ -39,11 +39,27 @@ public class GlobalExceptionHandler {
 		ex.getConstraintViolations().forEach(violation -> errorMessage.append(violation.getPropertyPath()).append(" ")
 				.append(violation.getMessage()).append("; "));
 		return new ApiResponse<>(CommonConstant.MSG_PREFIX_FAILED, errorMessage.toString());
-	}   
-	
+	}
+
 	@ExceptionHandler(AlreadyExitException.class)
-    public ResponseEntity<ApiResponse<Void>> handleInvalidInputException(AlreadyExitException ex) {
-        ApiResponse<Void> response = new ApiResponse<>(CommonConstant.MSG_PREFIX_FAILED, ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    } 
+	public ResponseEntity<ApiResponse<Void>> handleInvalidInputException(AlreadyExitException ex) {
+		ApiResponse<Void> response = new ApiResponse<>(CommonConstant.MSG_PREFIX_FAILED, ex.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	}
+
+	@ExceptionHandler(ResponseInfoException.class)
+	public ResponseEntity<ApiResponse<Void>> handleResponseInfoException(ResponseInfoException ex) {
+		ApiResponse<Void> response = new ApiResponse<>(CommonConstant.MSG_PREFIX_FAILED, ex.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	}
+
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException e) {
+		return ResponseEntity.badRequest().body(e.getMessage());
+	}
+
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<String> handleIllegalState(IllegalStateException e) {
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+	}
 }

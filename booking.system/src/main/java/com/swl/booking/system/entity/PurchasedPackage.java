@@ -24,18 +24,29 @@ public class PurchasedPackage extends BaseEntity {
 	 * 
 	 */
 	private static final long serialVersionUID = -4830416237362008714L;
-	
+
 	@Column(name = "remaining_credits")
 	private int remainingCredits;
 	
-	@Column(name = "purchase_date") 
+	@Column(name = "expiry_date")
+	private Date expiryDate;
+
+	@Column(name = "purchase_date")
 	private Date purchaseDate = new Date();
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "packages_id")
-    private Packages pack;
+	@ManyToOne
+	@JoinColumn(name = "packages_id")
+	private Packages pack;
+
+	public void decrementRemainingCredits(int credit) {
+		if (remainingCredits >= credit) {
+			remainingCredits -= credit;
+		} else {
+			throw new IllegalStateException("Insufficient credits to decrement.");
+		}
+	}
 }
