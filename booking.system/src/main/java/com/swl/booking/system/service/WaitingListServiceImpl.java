@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.swl.booking.system.entity.BookingClass;
+import com.swl.booking.system.entity.User;
 import com.swl.booking.system.entity.WaitingList;
 import com.swl.booking.system.repository.WaitingListRepository;
 import com.swl.booking.system.response.booking.WaitingListData;
@@ -44,9 +47,18 @@ public class WaitingListServiceImpl implements WaitingListService {
 		data.setId(entity.getId());
 		BookingClass waitClass = entity.getWaitingListClass();
 		data.setClassName(waitClass.getName());
-		data.setCountryName(waitClass.getCountry().getName()); 
+		data.setCountryName(waitClass.getCountry().getName());
 		data.setExpiryDate(CommonUtil.dateToString(CommonConstant.STD_DATE_FORMAT, waitClass.getExpiryDate()));
 		data.setWaitingStartDate(CommonUtil.dateToString(CommonConstant.STD_DATE_FORMAT, entity.getWaitingListDate()));
 		return data;
+	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Override
+	public void addToWaitingListInNewTransaction(User user, BookingClass bookingClass) {
+		WaitingList waitingList = new WaitingList();
+		waitingList.setUser(user);
+		waitingList.setWaitingListClass(bookingClass);
+		waitingListRepository.save(waitingList); 
 	}
 }

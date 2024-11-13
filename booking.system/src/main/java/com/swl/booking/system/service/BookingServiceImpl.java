@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service; 
 import org.springframework.transaction.annotation.Transactional;
 
 import com.swl.booking.system.entity.Booking;
@@ -42,16 +42,19 @@ public class BookingServiceImpl implements BookingService {
 	private final BookingClassRepository bookingClassRepository;
 	private final PurchasedPackageRepository purchasedPackageRepository;
 	private final WaitingListRepository waitingListRepository;
+	private final WaitingListService waitingListService;
 
 	public BookingServiceImpl(RedisTemplate<String, Object> redisTemplate, BookingRepository bookingRepository,
 			UserRepository userRepository, BookingClassRepository bookingClassRepository,
-			PurchasedPackageRepository purchasedPackageRepository, WaitingListRepository waitingListRepository) {
+			PurchasedPackageRepository purchasedPackageRepository, WaitingListRepository waitingListRepository,
+			WaitingListService waitingListService) {
 		this.redisTemplate = redisTemplate;
 		this.bookingRepository = bookingRepository;
 		this.userRepository = userRepository;
 		this.bookingClassRepository = bookingClassRepository;
 		this.purchasedPackageRepository = purchasedPackageRepository;
 		this.waitingListRepository = waitingListRepository;
+		this.waitingListService = waitingListService;
 	}
 
 	@Override
@@ -76,18 +79,22 @@ public class BookingServiceImpl implements BookingService {
 
 		try {
 			User user = getUser();
-			BookingClass bookingClass = getBookingClass(req.getBookingClassId());
-			PurchasedPackage purchasedPackage = getAvaiablePurchasedPackage(user.getId());
-
-			validateClassExpiryDate(bookingClass.getExpiryDate());
-			validateClassIsAlreadyBooked(user, bookingClass);
-			validateSufficientCredits(purchasedPackage, bookingClass);
-			validateAvaiableSlot(user, bookingClass);
-
-			processBooking(user, bookingClass, purchasedPackage);
+			bookingProcess(user, req); 
 		} finally {
 			redisTemplate.delete(lockKey);
 		}
+	}
+
+	private void bookingProcess(User user, BookClassRequest req) {
+		BookingClass bookingClass = getBookingClass(req.getBookingClassId());
+		PurchasedPackage purchasedPackage = getAvaiablePurchasedPackage(user.getId());
+
+		validateClassExpiryDate(bookingClass.getExpiryDate());
+		validateClassIsAlreadyBooked(user, bookingClass);
+		validateSufficientCredits(purchasedPackage, bookingClass);
+		validateAvaiableSlot(user, bookingClass);
+
+		processBooking(user, bookingClass, purchasedPackage); 
 	}
 
 	@Transactional
@@ -107,10 +114,16 @@ public class BookingServiceImpl implements BookingService {
 		Optional<WaitingList> waitingListOpt = getWaitingList(bookingClass);
 
 		if (waitingListOpt.isPresent()) {
-			BookClassRequest reqForBooking = new BookClassRequest();
-			reqForBooking.setBookingClassId(bookingClass.getId());
-			bookClass(reqForBooking);
+			bookFroWaitingList(waitingListOpt, bookingClass); 
 		}
+	}
+
+	private void bookFroWaitingList(Optional<WaitingList> waitingListOpt, BookingClass bookingClass) {
+		User wUser = waitingListOpt.get().getUser();
+		BookClassRequest reqForBooking = new BookClassRequest();
+		reqForBooking.setBookingClassId(bookingClass.getId()); 
+		bookingProcess(wUser, reqForBooking); 
+		waitingListRepository.delete(waitingListOpt.get());
 	}
 
 	@Transactional
@@ -126,7 +139,7 @@ public class BookingServiceImpl implements BookingService {
 
 		try {
 			Booking booking = getBooking(req.getBookingId());
-			BookingClass bookingClass = booking.getBookingClass();
+//			BookingClass bookingClass = booking.getBookingClass();
 
 //			validateClassIsAlreadyBooked(user, bookingClass);
 
@@ -142,7 +155,7 @@ public class BookingServiceImpl implements BookingService {
 			redisTemplate.delete(lockKey);
 		}
 
-	} 
+	}
 
 	private <T> T getEntityOrThrow(Optional<T> entity, String entityName) {
 		return entity.orElseThrow(() -> new ResponseInfoException(entityName + " not found."));
@@ -150,10 +163,10 @@ public class BookingServiceImpl implements BookingService {
 
 	private void validateAvaiableSlot(User user, BookingClass bookingClass) {
 		if (bookingClass.getAvailableSlots() <= 0) {
-			addWaitingList(user, bookingClass);
+			waitingListService.addToWaitingListInNewTransaction(user, bookingClass);
 			throw new ResponseInfoException("Booking Class is full. You have added to waiting list.");
 		}
-	}
+	} 
 
 	private void validateSufficientCredits(PurchasedPackage purchasedPackage, BookingClass bookingClass) {
 		if (purchasedPackage.getRemainingCredits() < bookingClass.getRequiredCredits())
@@ -172,7 +185,7 @@ public class BookingServiceImpl implements BookingService {
 		if (bookingOpt.isPresent()) {
 			throw new ResponseInfoException("This class is already booked.");
 		}
-	} 
+	}
 
 	private void processBooking(User user, BookingClass bookingClass, PurchasedPackage purchasedPackage) {
 		bookingClass.decrementAvailableSlots();
@@ -200,14 +213,7 @@ public class BookingServiceImpl implements BookingService {
 	private void updateBooking(Booking booking) {
 		booking.setStatus(BookingStatus.CANCEL.getCode());
 		bookingRepository.save(booking);
-	}
-
-	private void addWaitingList(User user, BookingClass bookingClass) {
-		WaitingList waitingList = new WaitingList();
-		waitingList.setUser(user);
-		waitingList.setWaitingListClass(bookingClass);
-		waitingListRepository.save(waitingList);
-	}
+	} 
 
 	private User getUser() {
 		UserPrincipal userData = CommonUtil.getUserPrincipalFromAuthentication();
